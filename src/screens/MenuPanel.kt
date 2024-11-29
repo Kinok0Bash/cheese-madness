@@ -28,14 +28,24 @@ class MenuPanel(private val frame: GameFrame) : JPanel() {
         iconLabel.setBounds(560, 120, 160, 160)
 
         // Кнопки
-        val startButton = createMenuButton("Начать игру")
-        val levelSelectButton = createMenuButton("Выбрать уровень")
+        val isNotFirstLevel = LevelManager.unlockedLevels != 1
+        val continueButton = createMenuButton("Продолжить", isNotFirstLevel)
+        val startButton = createMenuButton("Начать игру", true)
+        val levelSelectButton = createMenuButton("Выбрать уровень", true)
 
         // Устанавливаем положение кнопок
-        startButton.setBounds(540, 300, 200, 50)
-        levelSelectButton.setBounds(540, 370, 200, 50)
+        continueButton.setBounds(540, 300, 200, 50)
+        startButton.setBounds(540, 370, 200, 50)
+        levelSelectButton.setBounds(540, 440, 200, 50)
 
         // Добавляем обработчики действий
+        continueButton.addActionListener {
+            val gamePanel = GamePanel(frame, LevelManager.unlockedLevels - 1)
+            frame.contentPane = gamePanel
+            gamePanel.requestFocusInWindow()
+            frame.validate()
+        }
+
         startButton.addActionListener {
             val gamePanel = GamePanel(frame, 0)
             frame.contentPane = gamePanel
@@ -51,6 +61,7 @@ class MenuPanel(private val frame: GameFrame) : JPanel() {
         // Добавляем элементы на панель
         add(titleLabel)
         add(iconLabel)
+        add(continueButton)
         add(startButton)
         add(levelSelectButton)
     }
@@ -75,17 +86,21 @@ class MenuPanel(private val frame: GameFrame) : JPanel() {
         }
     }
 
-    private fun createMenuButton(text: String): JButton {
+    private fun createMenuButton(text: String, isUnlock: Boolean): JButton {
         return JButton(text).apply {
             font = Font("Arial", Font.PLAIN, 18)
             isFocusPainted = false
             isContentAreaFilled = false
-            border = BorderFactory.createLineBorder(Color.YELLOW, 2)
-            foreground = Color.YELLOW
-            background = Color.DARK_GRAY
+            if (isUnlock) {
+                border = BorderFactory.createLineBorder(Color.YELLOW, 2)
+                foreground = Color.YELLOW
+            } else {
+                border = BorderFactory.createLineBorder(Color.BLACK, 2)
+                foreground = Color.BLACK
+            }
             cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
 
-            addMouseListener(object : java.awt.event.MouseAdapter() {
+            if (isUnlock) addMouseListener(object : java.awt.event.MouseAdapter() {
                 override fun mouseEntered(e: java.awt.event.MouseEvent?) {
                     foreground = Color.ORANGE
                     border = BorderFactory.createLineBorder(Color.ORANGE, 2)

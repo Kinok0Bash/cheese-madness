@@ -74,6 +74,9 @@ class GamePanel(private val frame: GameFrame, private val levelIndex: Int) : JPa
 
         // Проверяем открытие двери
         doorOpen = keysCollected >= 3
+
+        if (doorOpen) door.open()
+
         if (doorOpen && player.bounds.intersects(door.bounds)) {
             keysCollected = 0
             LevelManager.unlockNextLevel(levelIndex)

@@ -1,48 +1,9 @@
 package entities
 
 import engine.SpriteLoader
-import java.awt.*
+import java.awt.Graphics
 import java.awt.event.KeyEvent
 import java.awt.event.KeyListener
-
-abstract class GameObject(var x: Int, var y: Int, val width: Int, val height: Int) {
-    val bounds: Rectangle
-        get() = Rectangle(x, y, width, height)
-
-    abstract fun draw(g: Graphics)
-}
-
-class Block(x: Int, y: Int) : GameObject(x, y, 64, 64) {
-    private val sprite = SpriteLoader.load("resources/sprites/wall.png")
-
-    override fun draw(g: Graphics) {
-        g.drawImage(sprite, x, y, width, height, null)
-    }
-}
-
-class Key(x: Int, y: Int) : GameObject(x, y, 32, 32) {
-    private val sprite = SpriteLoader.load("resources/sprites/cheese.png")
-
-    override fun draw(g: Graphics) {
-        g.drawImage(sprite, x, y, width, height, null)
-    }
-}
-
-class Door(x: Int, y: Int) : GameObject(x, y, 64, 64) {
-    private val sprite = SpriteLoader.load("resources/sprites/door.png")
-
-    override fun draw(g: Graphics) {
-        g.drawImage(sprite, x, y, width, height, null)
-    }
-}
-
-class Background(x: Int, y: Int) : GameObject(x, y, 64, 64) {
-    private val sprite = SpriteLoader.load("resources/sprites/background.png")
-
-    override fun draw(g: Graphics) {
-        g.drawImage(sprite, x, y, width, height, null)
-    }
-}
 
 class Player(x: Int, y: Int) : GameObject(x, y, 64, 64), KeyListener {
     private var dx = 0

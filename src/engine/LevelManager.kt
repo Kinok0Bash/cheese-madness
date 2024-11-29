@@ -1,17 +1,16 @@
 package engine
 
-class LevelManager {
-    private val levels: MutableList<String> = mutableListOf()
-    private val maxLevels = 3
+object LevelManager {
+    val levels: MutableList<String> = mutableListOf()
+    const val MAX_LEVELS = 20
 
     init {
-        for (i in 1 .. maxLevels) {
+        for (i in 1 .. MAX_LEVELS) {
             levels.add("resources/levels/$i.level")
         }
     }
 
-    //    var unlockedLevels = 1
-    var unlockedLevels = maxLevels
+    var unlockedLevels = 1
 
     fun getLevelPath(levelIndex: Int): String {
         return levels[levelIndex]
@@ -21,8 +20,8 @@ class LevelManager {
         return levels.take(unlockedLevels)
     }
 
-    fun unlockNextLevel() {
-        if (unlockedLevels < levels.size) {
+    fun unlockNextLevel(thisLevelIndex: Int) {
+        if (unlockedLevels < MAX_LEVELS && thisLevelIndex == unlockedLevels - 1) {
             unlockedLevels++
         }
     }

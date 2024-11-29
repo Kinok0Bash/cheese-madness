@@ -4,10 +4,12 @@ import GameFrame
 import engine.LevelManager
 import entities.*
 import java.awt.*
+import java.awt.event.KeyEvent
+import java.awt.event.KeyListener
 import java.io.File
 import javax.swing.*
 
-class GamePanel(private val frame: GameFrame, private val levelIndex: Int) : JPanel(), Runnable {
+class GamePanel(private val frame: GameFrame, private val levelIndex: Int) : JPanel(), Runnable, KeyListener {
     private val player = Player(64, 64)
     private var gameOver = false
     private var keysCollected = 0
@@ -18,15 +20,14 @@ class GamePanel(private val frame: GameFrame, private val levelIndex: Int) : JPa
     private val door = Door(18 * 64, 10 * 64)
     private val gameBackground = mutableListOf<Background>()
 
-    private val levelManager = LevelManager()
-
     init {
         layout = null
         background = Color.DARK_GRAY
-        loadLevel(levelManager.getLevelPath(levelIndex))
+        loadLevel(LevelManager.getLevelPath(levelIndex))
         isFocusable = true
         requestFocusInWindow()
         addKeyListener(player)
+        addKeyListener(this)
         Thread(this).start()
     }
 
@@ -51,9 +52,9 @@ class GamePanel(private val frame: GameFrame, private val levelIndex: Int) : JPa
             }
         }
 
+        gameBackground.forEach { it.draw(g) }
         blocks.forEach { it.draw(g) }
         keys.forEach { it.draw(g) }
-        gameBackground.forEach { it.draw(g) }
         door.draw(g)
         player.draw(g)
     }
@@ -75,12 +76,19 @@ class GamePanel(private val frame: GameFrame, private val levelIndex: Int) : JPa
         doorOpen = keysCollected >= 3
         if (doorOpen && player.bounds.intersects(door.bounds)) {
             keysCollected = 0
-            levelManager.unlockNextLevel() // Открываем следующий уровень
-            if (levelIndex + 1 < levelManager.unlockedLevels) {
-                frame.contentPane = GamePanel(frame, levelIndex + 1) // Загружаем следующий уровень
+            LevelManager.unlockNextLevel(levelIndex)
+            println(LevelManager.unlockedLevels)
+
+            if (levelIndex + 1 < LevelManager.MAX_LEVELS) {
+                val nextPanel = GamePanel(frame, levelIndex + 1)
+                frame.contentPane = nextPanel
+                nextPanel.requestFocusInWindow()
             } else {
-                frame.contentPane = MenuPanel(frame) // Возвращаемся в меню
+                val menuPanel = MenuPanel(frame)
+                frame.contentPane = menuPanel
+                menuPanel.requestFocusInWindow()
             }
+
             frame.validate()
         }
     }
@@ -97,10 +105,11 @@ class GamePanel(private val frame: GameFrame, private val levelIndex: Int) : JPa
             for ((x, char) in line.withIndex()) {
                 when (char) {
                     '#' -> blocks.add(Block(x * 64, y * 64))
-                    'K' -> keys.add(Key(x * 64 + 16, y * 64 + 16))
+                    'K' -> keys.add(Key(x * 64 + 8, y * 64 + 8))
                     'D' -> {door.x = x * 64; door.y = y * 64 }
                     'P' -> { player.x = x * 64; player.y = y * 64; playerPositionSet = true }
                 }
+                if (char != '#') gameBackground.add(Background(x * 64, y * 64))
             }
         }
 
@@ -108,4 +117,15 @@ class GamePanel(private val frame: GameFrame, private val levelIndex: Int) : JPa
             throw IllegalArgumentException("Ошибка загрузки уровня: начальная позиция игрока ('P') не найдена!")
         }
     }
+
+    override fun keyTyped(e: KeyEvent) {}
+
+    override fun keyPressed(e: KeyEvent) {
+        if (e.keyCode == KeyEvent.VK_ESCAPE) {
+            frame.contentPane = MenuPanel(frame)
+            frame.validate()
+        }
+    }
+
+    override fun keyReleased(e: KeyEvent?) {}
 }

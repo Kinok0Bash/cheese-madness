@@ -1,3 +1,4 @@
+import engine.SpriteLoader
 import screens.MenuPanel
 import java.awt.*
 import javax.swing.*
@@ -12,6 +13,7 @@ fun main() {
 class GameFrame : JFrame() {
     init {
         title = "СЫРНОЕ БЕЗУМИЕ"
+        iconImage = SpriteLoader.load("resources/sprites/cheese.png")
         size = Dimension(1280, 1000)
         defaultCloseOperation = EXIT_ON_CLOSE
         isResizable = false

@@ -5,19 +5,26 @@ import java.awt.Graphics
 import java.awt.event.KeyEvent
 import java.awt.event.KeyListener
 
-class Player(x: Int, y: Int) : GameObject(x, y, 64, 64), KeyListener {
+class Player(x: Int, y: Int) :
+    GameObject(x, y, 64, 64),
+    KeyListener,
+    ReDrawable
+{
     private var dx = 0
     private var dy = 0
     private val gravity = 1 // Сила гравитации
     private val jumpStrength = -16 // Сила прыжка
     private val maxFallSpeed = 10 // Максимальная скорость падения
     private var isOnGround = false // Флаг, чтобы знать, находится ли игрок на земле
+    var isCheeseMadness = false // Флаг, подобрал ли сыр персонаж игрока
 
-    private val sprite = SpriteLoader.load("resources/sprites/player.png")
+    private val sprite = SpriteLoader.load("player")
+    private val cheeseMadnessSprite = SpriteLoader.load("win")
     private val pressedKeys = mutableSetOf<Int>() // Хранение текущих нажатых клавиш
 
     override fun draw(g: Graphics) {
-        g.drawImage(sprite, x, y, width, height, null)
+        if (isCheeseMadness) g.drawImage(cheeseMadnessSprite, x, y, width, height, null)
+        else g.drawImage(sprite, x, y, width, height, null)
     }
 
     fun update(blocks: List<GameObject>) {
@@ -78,5 +85,9 @@ class Player(x: Int, y: Int) : GameObject(x, y, 64, 64), KeyListener {
         if (KeyEvent.VK_LEFT in pressedKeys) dx = -5
         if (KeyEvent.VK_RIGHT in pressedKeys) dx = 5
         if (KeyEvent.VK_Z in pressedKeys && isOnGround) dy = jumpStrength // Прыжок
+    }
+
+    override fun reDraw() {
+        isCheeseMadness = !isCheeseMadness
     }
 }

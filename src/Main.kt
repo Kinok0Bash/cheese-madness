@@ -13,7 +13,7 @@ fun main() {
 class GameFrame : JFrame() {
     init {
         title = "СЫРНОЕ БЕЗУМИЕ"
-        iconImage = SpriteLoader.load("resources/sprites/cheese.png")
+        iconImage = SpriteLoader.load("cheese")
         size = Dimension(1280, 1000)
         defaultCloseOperation = EXIT_ON_CLOSE
         isResizable = false

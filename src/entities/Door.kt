@@ -3,9 +3,12 @@ package entities
 import engine.SpriteLoader
 import java.awt.Graphics
 
-class Door(x: Int, y: Int) : GameObject(x, y, 64, 64) {
-    private val sprite = SpriteLoader.load("resources/sprites/door.png")
-    private val openSprite = SpriteLoader.load("resources/sprites/door_opened.png")
+class Door(x: Int, y: Int) :
+    GameObject(x, y, 64, 64),
+    ReDrawable
+{
+    private val sprite = SpriteLoader.load("door")
+    private val openSprite = SpriteLoader.load("door_opened")
     private var isOpen = false
 
     override fun draw(g: Graphics) {
@@ -13,7 +16,7 @@ class Door(x: Int, y: Int) : GameObject(x, y, 64, 64) {
         g.drawImage(currentSprite, x, y, width, height, null)
     }
 
-    fun open() {
+    override fun reDraw() {
         isOpen = true
     }
 }

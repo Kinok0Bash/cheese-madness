@@ -9,7 +9,7 @@ import javax.swing.*
 class MenuPanel(private val frame: GameFrame) : JPanel() {
 
     private val backgroundBlocks = mutableListOf<Rectangle>()
-    private val blockImage: Image = SpriteLoader.load("resources/sprites/background.png")
+    private val blockImage: Image = SpriteLoader.load("background")
 
     init {
         println(LevelManager.unlockedLevels)

@@ -11,7 +11,7 @@ import javax.swing.JPanel
 
 class LevelSelectPanel(private val frame: GameFrame) : JPanel() {
     private val backgroundBlocks = mutableListOf<Rectangle>() // Для фона
-    private val blockImage = SpriteLoader.load("resources/sprites/background.png") // Изображение блока
+    private val blockImage = SpriteLoader.load("background") // Изображение блока
 
     init {
         // Настройка панели

@@ -16,9 +16,11 @@ class GamePanel(private val frame: GameFrame, private val levelIndex: Int) : JPa
     private var doorOpen = false
 
     private val blocks = mutableListOf<GameObject>()
-    private val keys = mutableListOf<Key>()
+    private val cheeses = mutableListOf<Cheese>()
     private val door = Door(18 * 64, 10 * 64)
     private val gameBackground = mutableListOf<Background>()
+
+    private var madnessCounter = 0
 
     init {
         layout = null
@@ -32,13 +34,12 @@ class GamePanel(private val frame: GameFrame, private val levelIndex: Int) : JPa
     }
 
     override fun run() {
-        while (!gameOver) {
+        while (true) {
             updateGame()
             repaint()
+            if (madnessCounter > 0) madnessCounter--
             Thread.sleep(16)
         }
-        frame.contentPane = GameOverPanel(frame)
-        frame.validate()
     }
 
     override fun paintComponent(g: Graphics) {
@@ -54,7 +55,7 @@ class GamePanel(private val frame: GameFrame, private val levelIndex: Int) : JPa
 
         gameBackground.forEach { it.draw(g) }
         blocks.forEach { it.draw(g) }
-        keys.forEach { it.draw(g) }
+        cheeses.forEach { it.draw(g) }
         door.draw(g)
         player.draw(g)
     }
@@ -62,10 +63,14 @@ class GamePanel(private val frame: GameFrame, private val levelIndex: Int) : JPa
     private fun updateGame() {
         player.update(blocks)
 
+        if (player.isCheeseMadness && madnessCounter <= 0) player.reDraw()
+
         // Проверяем сбор ключей
-        keys.removeIf {
+        cheeses.removeIf {
             if (player.bounds.intersects(it.bounds)) {
                 keysCollected++
+                player.reDraw()
+                madnessCounter = 30
                 true
             } else {
                 false
@@ -75,7 +80,7 @@ class GamePanel(private val frame: GameFrame, private val levelIndex: Int) : JPa
         // Проверяем открытие двери
         doorOpen = keysCollected >= 3
 
-        if (doorOpen) door.open()
+        if (doorOpen) door.reDraw()
 
         if (doorOpen && player.bounds.intersects(door.bounds)) {
             keysCollected = 0
@@ -98,7 +103,7 @@ class GamePanel(private val frame: GameFrame, private val levelIndex: Int) : JPa
 
     private fun loadLevel(levelPath: String) {
         blocks.clear()
-        keys.clear()
+        cheeses.clear()
         gameBackground.clear()
         keysCollected = 0
         var playerPositionSet = false
@@ -108,7 +113,7 @@ class GamePanel(private val frame: GameFrame, private val levelIndex: Int) : JPa
             for ((x, char) in line.withIndex()) {
                 when (char) {
                     '#' -> blocks.add(Block(x * 64, y * 64))
-                    'K' -> keys.add(Key(x * 64 + 8, y * 64 + 8))
+                    'K' -> cheeses.add(Cheese(x * 64 + 8, y * 64 + 8))
                     'D' -> {door.x = x * 64; door.y = y * 64 }
                     'P' -> { player.x = x * 64; player.y = y * 64; playerPositionSet = true }
                 }
